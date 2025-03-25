@@ -528,4 +528,35 @@ class ChessLogicSpec extends AnyFlatSpec with Matchers {
     // White king is not under opponent bishop attack because of white pawn at the f2 position
     isPieceUnderAttack(board, whiteKingSquare, Black) shouldBe false
   }
+
+  "ChessLogic" should "identify a `check`" in {
+    val board = initBoard()
+
+    // Move white pawn from e2 to e4
+    movePiece(board, (1, 4), (3, 4))
+
+    // Move black pawn from e7 to e5
+    movePiece(board, (0, 5), (4, 4))
+
+    // Move white bishop from f1 to c4
+    movePiece(board, (0, 5), (3, 2))
+
+    // Move black knight from b8 to c6
+    movePiece(board, (7, 1), (5, 2))
+
+    // Move white queen from d1 to f3
+    movePiece(board, (0, 3), (2, 5))
+
+    // Move from black pawn from d7 to d6
+    movePiece(board, (6, 3), (5, 3))
+
+    // Move white queen from f3 to f7 - check
+    movePiece(board, (2, 5), (6, 5))
+
+    // Find black king at
+    val blackKingSquare = findPiece(board, King(Black)).get
+
+    // Check if black king is under opponent queen attack
+    isPieceUnderAttack(board, blackKingSquare, White) shouldBe true
+  }
 }
