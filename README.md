@@ -1,7 +1,7 @@
 ### Chess Game App
 - A chess game application written in Scala.
 
-![chessboard with pieces.jpeg](..%2F..%2F..%2FDesktop%2Fchessboard%20with%20pieces.jpeg)
+![Chessboard with the pieces in their initial state](https://www.houseofstaunton.com/media/wysiwyg/ChessBasics/HOS/setup-board.JPG)
 
 #### Game rules
 The move is according to the moves allowed by the piece on the starting position:
