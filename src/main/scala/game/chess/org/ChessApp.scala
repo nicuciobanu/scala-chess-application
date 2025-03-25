@@ -42,7 +42,7 @@ object ChessApp extends App {
             findPiece(board, King(opponentPlayerColor)) match {
               case Some((x, y)) =>
                 val isOpponentColorUnderAttack = isPieceUnderAttack(board, (x, y), opponentPlayerColor)
-                println(s"isOpponentColorUnderAttack: $isOpponentColorUnderAttack")
+
                 if (isOpponentColorUnderAttack) {
                   println("Check")
                   // Switch players

@@ -7,29 +7,29 @@ import game.chess.org.piece._
 object Chessboard {
   // Initialize the board with the standard chess setup
   def initBoard(): Board = {
-    val board: Board = Array.ofDim[Option[Piece]](8, 8)
+    val board = Array.ofDim[Option[Piece]](8, 8)
 
-    // Place the pieces for player 1 (white)
-    board(0)(0) = Some(Rook(White))
-    board(0)(1) = Some(Knight(White))
-    board(0)(2) = Some(Bishop(White))
-    board(0)(3) = Some(Queen(White))
-    board(0)(4) = Some(King(White))
-    board(0)(5) = Some(Bishop(White))
-    board(0)(6) = Some(Knight(White))
-    board(0)(7) = Some(Rook(White))
-    for (i <- 0 until 8) board(1)(i) = Some(Pawn(White))
+    // Place white pieces (uppercase) at the bottom (rows 0-1)
+    board(0)(0) = Some(Rook(White))   // a1
+    board(0)(1) = Some(Knight(White)) // b1
+    board(0)(2) = Some(Bishop(White)) // c1
+    board(0)(3) = Some(Queen(White))  // d1
+    board(0)(4) = Some(King(White))   // e1
+    board(0)(5) = Some(Bishop(White)) // f1
+    board(0)(6) = Some(Knight(White)) // g1
+    board(0)(7) = Some(Rook(White))   // h1
+    for (i <- 0 until 8) board(1)(i) = Some(Pawn(White)) // a2-h2
 
-    // Place the pieces for player 2 (black)
-    board(7)(0) = Some(Rook(Black))
-    board(7)(1) = Some(Knight(Black))
-    board(7)(2) = Some(Bishop(Black))
-    board(7)(3) = Some(Queen(Black))
-    board(7)(4) = Some(King(Black))
-    board(7)(5) = Some(Bishop(Black))
-    board(7)(6) = Some(Knight(Black))
-    board(7)(7) = Some(Rook(Black))
-    for (i <- 0 until 8) board(6)(i) = Some(Pawn(Black))
+    // Place black pieces (lowercase) at the top (rows 6-7)
+    board(7)(0) = Some(Rook(Black))   // a8
+    board(7)(1) = Some(Knight(Black)) // b8
+    board(7)(2) = Some(Bishop(Black)) // c8
+    board(7)(3) = Some(Queen(Black))  // d8
+    board(7)(4) = Some(King(Black))   // e8
+    board(7)(5) = Some(Bishop(Black)) // f8
+    board(7)(6) = Some(Knight(Black)) // g8
+    board(7)(7) = Some(Rook(Black))   // h8
+    for (i <- 0 until 8) board(6)(i) = Some(Pawn(Black)) // a7-h7
 
     // Fill the rest of the board with empty squares
     for {
@@ -40,19 +40,32 @@ object Chessboard {
     board
   }
 
-  // Render the board in ASCII
   def renderBoard(board: Board): String = {
     val sb = new StringBuilder
+
+    // Add column letters (a-h) at the top
+    sb.append("  ")
+    for (i <- 0 until 8) sb.append((i + 'a').toChar + " ")
+    sb.append("\n")
+
+    // Render each row with row numbers (8-1) on the left
     for (i <- 0 until 8) {
+      sb.append(s"${8 - i} ") // Row number (1-8)
       for (j <- 0 until 8) {
         val piece = board(i)(j) match {
-          case Some(p) => if (p.color == White) p.symbol.toUpper else p.symbol.toLower
+          case Some(p) => if (p.color == 'W') p.symbol.toLower else p.symbol.toUpper
           case None    => '.'
         }
         sb.append(s"$piece ")
       }
-      sb.append("\n")
+      sb.append(s"${8 - i}\n") // Row number (1-8) on the right
     }
+
+    // Add column letters (a-h) at the bottom
+    sb.append("  ")
+    for (j <- 0 until 8) sb.append((j + 'a').toChar + " ")
+    sb.append("\n")
+
     sb.toString()
   }
 }

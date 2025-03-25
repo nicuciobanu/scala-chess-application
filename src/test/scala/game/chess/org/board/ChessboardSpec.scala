@@ -52,10 +52,14 @@ class ChessboardSpec extends AnyFlatSpec with Matchers {
     val rendered = renderBoard(board)
 
     // Check that the rendered board contains the correct pieces
-    rendered should include(s"$RookSymbol $KnightSymbol $BishopSymbol $QueenSymbol $KingSymbol $BishopSymbol $KnightSymbol $RookSymbol")
-    rendered should include(s"$PawnSymbol $PawnSymbol $PawnSymbol $PawnSymbol $PawnSymbol $PawnSymbol $PawnSymbol $PawnSymbol")
-    rendered should include(". . . . . . . .")
-    rendered should include(s"$pawnSymbol $pawnSymbol $pawnSymbol $pawnSymbol $pawnSymbol $pawnSymbol $pawnSymbol $pawnSymbol")
-    rendered should include(s"$rookSymbol $knightSymbol $bishopSymbol $queenSymbol $kingSymbol $bishopSymbol $knightSymbol $rookSymbol")
+    rendered should include("  a b c d e f g h")
+    rendered should include(s"1 $RookSymbol $KnightSymbol $BishopSymbol $QueenSymbol $KingSymbol $BishopSymbol $KnightSymbol $RookSymbol 1")
+    rendered should include(s"2 $PawnSymbol $PawnSymbol $PawnSymbol $PawnSymbol $PawnSymbol $PawnSymbol $PawnSymbol $PawnSymbol 2")
+    rendered should include("6 . . . . . . . . 6")
+    rendered should include("5 . . . . . . . . 5")
+    rendered should include("4 . . . . . . . . 4")
+    rendered should include("3 . . . . . . . . 3")
+    rendered should include(s"7 $pawnSymbol $pawnSymbol $pawnSymbol $pawnSymbol $pawnSymbol $pawnSymbol $pawnSymbol $pawnSymbol 7")
+    rendered should include(s"8 $rookSymbol $knightSymbol $bishopSymbol $queenSymbol $kingSymbol $bishopSymbol $knightSymbol $rookSymbol 8")
   }
 }
