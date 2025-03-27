@@ -6,63 +6,143 @@ import game.chess.org.Utils.parseSquare
 import game.chess.org.logic.ChessLogic._
 import game.chess.org.piece.King
 
+import scala.annotation.tailrec
+
 object ChessApp extends App {
 
-  val board                              = initBoard()
-  private var currentPlayer              = White
-  private var isCurrentPlayerUnderAttack = false
+  startGame(board = initBoard(), currentPlayer = White)
 
-  while (true) {
-    println(renderBoard(board))
+  /** The function starts the logic of the chess game.
+    * @board
+    *   - chessboard with the positions of the chess pieces.
+    * @currentPlayer
+    *   - the character that represents the player's color, B(Black) or W(White).
+    */
+  private def startGame(board: Board, currentPlayer: Char): Unit = {
+    val whitePlayerStr = "1 (White)"
+    val blackPlayerStr = "2 (Black)"
 
-    val player = if (currentPlayer == White) "1 (White)" else "2 (Black)"
+    @tailrec
+    def play(board: Board, currentPlayer: Char, isKingUnderAttack: Boolean, player: String): Unit = {
+      // Draw the pieces on the chessboard
+      println(renderBoard(board))
 
-    if (isCurrentPlayerUnderAttack)
-      println(s"In check!!! \nPlayer, $player enter your move (e.g., 'e2 e4'):")
-    else
-      println(s"Player, $player enter your move (e.g., 'e2 e4'):")
+      val whiteKingPositionOpt = findPiece(board, King(White))
+      val blackKingPositionOpt = findPiece(board, King(Black))
 
-    val movementCoordinates = scala.io.StdIn.readLine().split(" ")
+      // Game will continue only when both kins are on the chessboard
+      if (whiteKingPositionOpt.isEmpty || blackKingPositionOpt.isEmpty) {
+        // Checkmate - game is over
+        println(s"Checkmate - game is over, user '$player' won.")
+      } else {
+        // Print message to enter coordinates
+        val updatedPlayer = printEnterMovesMsg(
+          currentPlayer = currentPlayer,
+          isKingUnderAttack = isKingUnderAttack,
+          whitePlayerStr = whitePlayerStr,
+          blackPlayerStr = blackPlayerStr
+        )
 
-    if (movementCoordinates.length != 2) println("Invalid input. Please enter two squares separated by a space.")
-    else {
-      val from = parseSquare(movementCoordinates(0))
-      val to   = parseSquare(movementCoordinates(1))
+        // Add moves from console
+        enterMoves() match {
+          case (Some((x1, y1)), Some((x2, y2))) =>
+            if (validateMove(board, (x1, y1), (x2, y2))) {
+              // Identify opponent's color
+              val opponentPlayerColor = if (currentPlayer == White) Black else White
 
-      (from, to) match {
-        case (Some((x1, y1)), Some((x2, y2))) =>
-          if (validateMove(board, (x1, y1), (x2, y2))) {
-            // Update the board
-            movePiece(board, (x1, y1), (x2, y2))
+              // Update board
+              val updatedBoard = movePiece(board, (x1, y1), (x2, y2))
 
-            // Identify opponent's color
-            val opponentPlayerColor = if (currentPlayer == White) Black else White
+              val isOppKingUnderAttack =
+                printAndCheckIfOpponentKingUnderAttack(updatedBoard, whiteKingPositionOpt, blackKingPositionOpt, opponentPlayerColor)
 
-            // Find opponent king
-            findPiece(board, King(opponentPlayerColor)) match {
-              case Some((x, y)) =>
-                val isOpponentColorUnderAttack = isPieceUnderAttack(board, (x, y), opponentPlayerColor)
-
-                if (isOpponentColorUnderAttack) {
-                  println("Check")
-                  // Switch players
-                  currentPlayer = opponentPlayerColor
-                  // After switching the player update the `isCurrentPlayerUnderAttack` flag
-                  isCurrentPlayerUnderAttack = isOpponentColorUnderAttack
-                } else {
-                  // Switch players
-                  currentPlayer = opponentPlayerColor
-                }
-
-              case _ =>
-                // Switch players
-                currentPlayer = opponentPlayerColor
+              play(
+                board = updatedBoard,
+                currentPlayer = opponentPlayerColor,
+                isKingUnderAttack = isOppKingUnderAttack,
+                player = updatedPlayer
+              )
+            } else {
+              println("Invalid move. Please try again.")
+              play(board = board, currentPlayer = currentPlayer, isKingUnderAttack = false, player = player)
             }
-          } else println("Invalid move. Please try again.")
 
-        case _ =>
-          println("Invalid square. Please enter squares in the format 'e2', with valid positions from 'a' to 'h' and from '1' to '8'.")
+          case _ =>
+            play(board = board, currentPlayer = currentPlayer, isKingUnderAttack = false, player = player)
+        }
       }
     }
+
+    play(board = board, currentPlayer = currentPlayer, isKingUnderAttack = false, player = whitePlayerStr)
+  }
+
+  /** The function prints the message 'check' if the opponent's king is in danger of attack, returns true if the king is under attack or
+    * false if the king is safe.
+    *
+    * @board
+    *   - chessboard with the positions of the chess pieces.
+    * @whiteKingPositionOpt
+    *   - possible coordinates of the white king.
+    * @blackKingPositionOpt
+    *   - possible coordinates of the black king
+    * @opponentPlayerColor
+    *   - character which can be B(Black) or W(White).
+    */
+  private def printAndCheckIfOpponentKingUnderAttack(
+      board: Board,
+      whiteKingPositionOpt: Option[(Int, Int)],
+      blackKingPositionOpt: Option[(Int, Int)],
+      opponentPlayerColor: Char
+  ): Boolean =
+    (whiteKingPositionOpt, blackKingPositionOpt) match {
+      case (Some((wx1, wy1)), Some((bx1, by2))) =>
+        if (isPieceUnderAttack(board, (wx1, wy1), opponentPlayerColor)) {
+          println("Check")
+          true
+        } else if (isPieceUnderAttack(board, (bx1, by2), opponentPlayerColor)) {
+          println("Check")
+          true
+        } else false
+
+      case _ => false
+    }
+
+  /** The function prints an individual message for each player to enter their coordinates, and returns the player.
+    *
+    * @currentPlayer
+    *   - the player color who must make the move.
+    * @isKingUnderAttack
+    *   - the flag indicating whether the opponent's king is in danger.
+    * @whitePlayerStr
+    *   - the player's white color string.
+    * @blackPlayerStr
+    *   - the player's black color string.
+    */
+  private def printEnterMovesMsg(
+      currentPlayer: Char,
+      isKingUnderAttack: Boolean,
+      whitePlayerStr: String,
+      blackPlayerStr: String
+  ): String = {
+    val player = if (currentPlayer == White) whitePlayerStr else blackPlayerStr
+
+    if (isKingUnderAttack) {
+      println(s"In check!!! \nPlayer, $player enter your move (e.g., 'e2 e4'):")
+      player
+    } else {
+      println(s"Player, $player enter your move (e.g., 'e2 e4'):")
+      player
+    }
+  }
+
+  /** The function is used to enter coordinates from the console.
+    */
+  private def enterMoves(): (Option[(Int, Int)], Option[(Int, Int)]) = {
+    val movementCoordinates = scala.io.StdIn.readLine().split(" ")
+
+    if (movementCoordinates.length != 2) {
+      println("Invalid input. Please enter two squares separated by a space.")
+      (None, None)
+    } else (parseSquare(movementCoordinates(0)), parseSquare(movementCoordinates(1)))
   }
 }

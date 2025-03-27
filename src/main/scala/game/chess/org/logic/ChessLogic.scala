@@ -87,14 +87,14 @@ object ChessLogic {
     */
   def findPiece(board: Board, piece: Piece): Option[(Int, Int)] = {
     @tailrec
-    def find(board: Board, piece: Piece, i: Int, j: Int, n: Int): Option[(Int, Int)] = {
+    def parseAndFind(board: Board, piece: Piece, i: Int, j: Int, n: Int): Option[(Int, Int)] = {
       if (board(i)(j) == Some(piece)) Some((i, j))
-      else if (j < n - 1) find(board, piece, i, j + 1, n)
-      else if (i < n - 1) find(board, piece, i + 1, 0, n)
+      else if (j < n - 1) parseAndFind(board, piece, i, j + 1, n)
+      else if (i < n - 1) parseAndFind(board, piece, i + 1, 0, n)
       else None
     }
 
-    find(board, piece, 0, 0, board.length)
+    parseAndFind(board, piece, 0, 0, board.length)
   }
 
   /** The function validate whether the piece on the specified position can be attacked by the opponent. It has three parameters, the
@@ -110,13 +110,13 @@ object ChessLogic {
     */
   def isPieceUnderAttack(board: Board, square: (Int, Int), opponentColor: Char): Boolean = {
     @tailrec
-    def isUnderAttack(i: Int, j: Int, n: Int, board: Board, square: (Int, Int), color: Char): Boolean =
+    def parseAndCheck(i: Int, j: Int, n: Int, board: Board, square: (Int, Int), color: Char): Boolean =
       if (validateMove(board = board, from = (i, j), to = square) && isSamePieceColor(i, j, board, color)) true
-      else if (j < n - 1) isUnderAttack(i, j + 1, n, board, square, color)
-      else if (i < n - 1) isUnderAttack(i + 1, 0, n, board, square, color)
+      else if (j < n - 1) parseAndCheck(i, j + 1, n, board, square, color)
+      else if (i < n - 1) parseAndCheck(i + 1, 0, n, board, square, color)
       else false
 
-    isUnderAttack(i = 0, j = 0, n = board.length, board = board, square = square, color = opponentColor)
+    parseAndCheck(i = 0, j = 0, n = board.length, board = board, square = square, color = opponentColor)
   }
 
   /** The function checks if the color of the piece at position x, y corresponds to the searched color. The function receives 4 parameters,
