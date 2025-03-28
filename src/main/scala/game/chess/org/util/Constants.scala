@@ -1,4 +1,4 @@
-package game.chess.org
+package game.chess.org.util
 
 object Constants {
   // Color symbols

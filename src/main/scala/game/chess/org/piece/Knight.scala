@@ -1,6 +1,6 @@
 package game.chess.org.piece
 
-import game.chess.org.Constants.KnightSymbol
+import game.chess.org.util.Constants.KnightSymbol
 
 case class Knight(c: Char) extends Piece { def symbol: Char = KnightSymbol }
 

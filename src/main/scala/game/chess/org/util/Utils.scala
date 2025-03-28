@@ -1,4 +1,4 @@
-package game.chess.org
+package game.chess.org.util
 
 object Utils {
   // Helper function to parse a square (e.g., "e2" -> (1, 4))

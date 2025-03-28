@@ -1,7 +1,7 @@
 package game.chess.org.piece
 
 import game.chess.org.Board
-import game.chess.org.Constants.BishopSymbol
+import game.chess.org.util.Constants.BishopSymbol
 
 import scala.annotation.tailrec
 

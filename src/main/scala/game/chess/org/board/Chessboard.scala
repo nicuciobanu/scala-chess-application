@@ -1,10 +1,13 @@
 package game.chess.org.board
 
 import game.chess.org.Board
-import game.chess.org.Constants.{Black, White}
+import game.chess.org.util.Constants.{Black, White}
 import game.chess.org.piece._
 
 object Chessboard {
+
+  /** The method initializes the 8x8 matrix with the pieces in their initial position.
+    */
   // Initialize the board with the standard chess setup
   def initBoard(): Board = {
     val board = Array.ofDim[Option[Piece]](8, 8)
@@ -40,6 +43,11 @@ object Chessboard {
     board
   }
 
+  /** The method draws a chessboard in the console with the position of the chess pieces on it.
+    *
+    * @board
+    *   - double dimensional array with 8 rows and 8 columns representing the chessboard.
+    */
   def renderBoard(board: Board): String = {
     val sb = new StringBuilder
 

@@ -1,6 +1,6 @@
 package game.chess.org.piece
 
-import game.chess.org.Constants.RookSymbol
+import game.chess.org.util.Constants.RookSymbol
 import game.chess.org.Board
 
 import scala.annotation.tailrec

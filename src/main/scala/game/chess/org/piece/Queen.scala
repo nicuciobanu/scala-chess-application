@@ -1,7 +1,7 @@
 package game.chess.org.piece
 
 import game.chess.org.Board
-import game.chess.org.Constants.QueenSymbol
+import game.chess.org.util.Constants.QueenSymbol
 
 case class Queen(c: Char) extends Piece { def symbol: Char = QueenSymbol }
 

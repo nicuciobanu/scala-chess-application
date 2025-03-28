@@ -1,7 +1,7 @@
 package game.chess.org.piece
 
 import game.chess.org.Board
-import game.chess.org.Constants.{PawnSymbol, White}
+import game.chess.org.util.Constants.{PawnSymbol, White}
 
 case class Pawn(c: Char) extends Piece { def symbol: Char = PawnSymbol }
 object Pawn {

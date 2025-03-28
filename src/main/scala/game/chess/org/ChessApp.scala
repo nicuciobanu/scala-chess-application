@@ -1,8 +1,8 @@
 package game.chess.org
 
 import game.chess.org.board.Chessboard._
-import game.chess.org.Constants.{Black, White}
-import game.chess.org.Utils.parseSquare
+import game.chess.org.util.Constants.{Black, White}
+import game.chess.org.util.Utils.parseSquare
 import game.chess.org.logic.ChessLogic._
 import game.chess.org.piece.King
 

@@ -1,6 +1,6 @@
 package game.chess.org.logic
 
-import game.chess.org.Constants._
+import game.chess.org.util.Constants._
 import game.chess.org.board.Chessboard._
 import game.chess.org.logic.ChessLogic._
 import game.chess.org.piece._
@@ -558,5 +558,42 @@ class ChessLogicSpec extends AnyFlatSpec with Matchers {
 
     // Check if black king is under opponent queen attack
     isPieceUnderAttack(board, blackKingSquare, White) shouldBe true
+  }
+
+  "ChessLogic" should "identify and skip a `check`" in {
+    val board = initBoard()
+
+    // Move white pawn from e2 to e4
+    movePiece(board, (1, 4), (3, 4))
+
+    // Move black pawn from e7 to e5
+    movePiece(board, (0, 5), (4, 4))
+
+    // Move white bishop from f1 to c4
+    movePiece(board, (0, 5), (3, 2))
+
+    // Move black knight from b8 to c6
+    movePiece(board, (7, 1), (5, 2))
+
+    // Move white queen from d1 to f3
+    movePiece(board, (0, 3), (2, 5))
+
+    // Move black queen from d8 to e7
+    movePiece(board, (7, 3), (6, 4))
+
+    // Move white queen from f3 to f7 - check
+    movePiece(board, (2, 5), (6, 5))
+
+    // Find black king at
+    val blackKingSquare = findPiece(board, King(Black)).get
+
+    // Check if black king is under opponent queen attack
+    isPieceUnderAttack(board, blackKingSquare, White) shouldBe true
+
+    // Move black queen from f7 to f7 - skip check and kill opponent queen
+    movePiece(board, (6, 4), (6, 5))
+
+    // Check if black king is under any opponent attack
+    isPieceUnderAttack(board, blackKingSquare, White) shouldBe false
   }
 }

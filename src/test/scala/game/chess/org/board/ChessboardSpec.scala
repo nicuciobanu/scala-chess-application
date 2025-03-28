@@ -1,6 +1,6 @@
 package game.chess.org.board
 
-import game.chess.org.Constants._
+import game.chess.org.util.Constants._
 import game.chess.org.board.Chessboard._
 import game.chess.org.piece._
 import org.scalatest.flatspec.AnyFlatSpec
