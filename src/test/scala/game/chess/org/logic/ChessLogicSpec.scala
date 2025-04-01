@@ -216,6 +216,34 @@ class ChessLogicSpec extends AnyFlatSpec with Matchers {
     validateMove(board, (1, 4), (0, 4)) shouldBe false
   }
 
+  "A pawn" should "move diagonally when en-passant" in {
+    val board = initBoard()
+
+    // Move white pawn from e2 to e4
+    movePiece(board, (1, 4), (3, 4))
+
+    // Move black pawn from b7 to b5
+    movePiece(board, (6, 1), (4, 1))
+
+    // Move white pawn from e4 to e5
+    movePiece(board, (3, 4), (4, 4))
+
+    // Move black pawn from d7 to d5
+    movePiece(board, (6, 3), (4, 3))
+
+    // Move black pawn from d7 to d5
+    movePiece(board, (6, 3), (4, 3))
+
+    // Validate white pawn en-passant move from e5 to d6
+    validateMove(board, (4, 4), (5, 3)) shouldBe true
+
+    // Move en-passant white pawn from e5 to d6
+    movePiece(board, (4, 4), (5, 3))
+
+    board(5)(3) shouldBe Some(Pawn(White))
+    board(4)(3) shouldBe None
+  }
+
   "A move" should "be invalid if the starting square is empty" in {
     val board = initBoard()
 

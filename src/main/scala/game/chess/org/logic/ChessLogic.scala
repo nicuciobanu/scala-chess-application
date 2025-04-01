@@ -2,6 +2,7 @@ package game.chess.org.logic
 
 import game.chess.org.Board
 import game.chess.org.piece.{Bishop, King, Knight, Pawn, Piece, Queen, Rook}
+import game.chess.org.util.Constants.White
 
 import scala.annotation.tailrec
 
@@ -53,8 +54,9 @@ object ChessLogic {
   }
 
   /** The function receives three parameters: the chessboard, the starting position where the piece we want to move is located, and the
-    * final position where we will move the piece, which will return the chessboard with the updated piece positions. The initial position
-    * is being released, and in the final position, we will have the piece from the initial position.
+    * final position where we will move the piece, which will return the chessboard with the updated piece positions. Also, if applicable,
+    * the rule for en passant applies. The initial position is being released, and in the final position, we will have the piece from the
+    * initial position.
     *
     * @board
     *   - chessboard with all pieces.
@@ -68,13 +70,43 @@ object ChessLogic {
     val (x2, y2) = to
 
     board(x1)(y1) match {
+      case Some(pawn: Pawn) =>
+        // The en-passant rule applies if applicable
+        findEnPassantPosition(board = board, pawn = pawn, from = from, to = to) match {
+          case Some((epx, epy)) =>
+            updatePositions(board = board, x1 = x1, y1 = y1, x2 = x2, y2 = y2, piece = pawn)
+            board(epx)(epy) = None
+            board
+
+          case _ =>
+            updatePositions(board = board, x1 = x1, y1 = y1, x2 = x2, y2 = y2, piece = pawn)
+        }
+
       case Some(piece) =>
-        board(x2)(y2) = Some(piece)
-        board(x1)(y1) = None
-        board
+        updatePositions(board = board, x1 = x1, y1 = y1, x2 = x2, y2 = y2, piece = piece)
 
       case _ => board
     }
+  }
+
+  /** The function ensures that when the piece is moved on the chessboard, the initial position of the piece becomes empty, and the final
+    * position will be the piece we wanted to move. The chessboard is returned with the updated pieces in new positions.
+    *
+    * @board
+    *   - chessboard with all pieces.
+    * @x1
+    *   - start position from the chessboard on x axes.
+    * @y1
+    *   - start position from the chessboard on y axes.
+    * @x2
+    *   - stop position from the chessboard on x axes.
+    * @y2
+    *   - stop position from the chessboard on y axes.
+    */
+  private def updatePositions(board: Board, x1: Int, y1: Int, x2: Int, y2: Int, piece: Piece): Board = {
+    board(x2)(y2) = Some(piece)
+    board(x1)(y1) = None
+    board
   }
 
   /** The function will receive two parameters: the chessboard and the piece we want to find. If the piece is found, we will return its
@@ -137,4 +169,24 @@ object ChessLogic {
       case Some(piece) if piece.color == color => true
       case _                                   => false
     }
+
+  // castling, en-passant, promotion
+  def findEnPassantPosition(board: Board, pawn: Pawn, from: (Int, Int), to: (Int, Int)): Option[(Int, Int)] = {
+    val (x1, y1) = from
+    val (x2, y2) = to
+
+    val direction = if (pawn.color == White) 1 else -1
+    // Both pawns must be on the fifth rank at position 4 (if you're playing white)
+    // or the fourth rank at position 3 (if you're playing black). In array numbering starts from 0.
+    val enPassantPosition = if (pawn.color == White) 4 else 3
+
+    if (
+      Math.abs(y2 - y1) == 1 && x2 == x1 + direction && x1 == enPassantPosition && board(x2)(y2) == None && board(x1)(y2).exists(
+        _.color != pawn.color
+      )
+    )
+      Some((x1, y2))
+    else
+      None
+  }
 }

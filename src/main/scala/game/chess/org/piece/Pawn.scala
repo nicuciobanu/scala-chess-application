@@ -26,6 +26,9 @@ object Pawn {
 
     val direction            = if (pawn.color == White) 1 else -1
     val initialStartPosition = if (pawn.color == White) 1 else 6
+    // Both pawns must be on the fifth rank at position 4 (if you're playing white)
+    // or the fourth rank at position 3 (if you're playing black). In array numbering starts from 0.
+    val enPassantPosition = if (pawn.color == White) 4 else 3
     // When pawn moves two squares, check if there is no piece
     val squaresAreEmpty = (board(x1 + direction)(y1), board(x2)(y2)) match {
       case (None, None) => true
@@ -39,7 +42,10 @@ object Pawn {
       else if (x2 == x1 + 2 * direction && x1 == initialStartPosition && squaresAreEmpty) true
       else false
     } else {
-      if (Math.abs(y2 - y1) == 1 && x2 == x1 + direction) board(x2)(y2).exists(_.color != pawn.color)
+      if (Math.abs(y2 - y1) == 1 && x2 == x1 + direction && x1 == enPassantPosition && board(x2)(y2) == None)
+        board(x1)(y2).exists(_.color != pawn.color)
+      else if (Math.abs(y2 - y1) == 1 && x2 == x1 + direction)
+        board(x2)(y2).exists(_.color != pawn.color)
       else false
     }
   }
