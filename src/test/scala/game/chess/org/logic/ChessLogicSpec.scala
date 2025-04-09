@@ -624,4 +624,23 @@ class ChessLogicSpec extends AnyFlatSpec with Matchers {
     // Check if black king is under any opponent attack
     isPieceUnderAttack(board, blackKingSquare, White) shouldBe false
   }
+
+  "ChessLogic" should "identify the pawn position if on the last position on opponent side" in {
+    val board = initBoard()
+
+    // Move white pawn from h2 to h8 - we don't care about the rules
+    movePiece(board, (1, 7), (7, 7))
+
+    // Check if white pawn is on h8 position
+    board(7)(7) shouldBe Some(Pawn(White))
+
+    // Find white pawn from the last opponent position
+    findPawnWhenOnOppositeEndOfBoard(board, Pawn(White)) shouldBe Some((7, 7))
+
+    // Update board - remove the white pawn from h8 position
+    board(7)(7) = None
+
+    // We don't have white pawn on the last opponent position
+    findPawnWhenOnOppositeEndOfBoard(board, Pawn(White)) shouldBe None
+  }
 }

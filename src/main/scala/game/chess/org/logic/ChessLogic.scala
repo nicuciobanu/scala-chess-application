@@ -171,7 +171,19 @@ object ChessLogic {
     }
 
   // castling, en-passant, promotion
-  def findEnPassantPosition(board: Board, pawn: Pawn, from: (Int, Int), to: (Int, Int)): Option[(Int, Int)] = {
+  /** The function receives four parameters: the chessboard, the pawn, the starting position where the piece we want to move is located, and
+    * the final position where we will move the piece. The function will return the position of the en passant figure if it is found.
+    *
+    * @board
+    *   - chessboard with all pieces.
+    * @pawn
+    *   - the pawn.
+    * @from
+    *   - start position from the chessboard where the piece is.
+    * @to
+    *   - end position from the chessboard where the piece should be moved.
+    */
+  private def findEnPassantPosition(board: Board, pawn: Pawn, from: (Int, Int), to: (Int, Int)): Option[(Int, Int)] = {
     val (x1, y1) = from
     val (x2, y2) = to
 
@@ -189,4 +201,26 @@ object ChessLogic {
     else
       None
   }
+
+  /** The function returns the position of the first pawn found if it is on the opponent's first line. The function receives two parameters,
+    * the pawn and the chessboard. If the pawn was found, its coordinates are returned.
+    * @board
+    *   - chessboard with all pieces.
+    * @pawn
+    *   - the pawn.
+    */
+  def findPawnWhenOnOppositeEndOfBoard(board: Board, pawn: Pawn): Option[(Int, Int)] = {
+    val oppositeEndOfBoardXAxePosition: Int = findOnOppositeEndOfBoard(pawn)
+
+    @tailrec
+    def processAndFind(board: Board, pawn: Pawn, x: Int, y: Int, n: Int): Option[(Int, Int)] = {
+      if (board(x)(y) == Some(pawn)) Some((x, y))
+      else if (y < n - 1) processAndFind(board, pawn, x, y + 1, n)
+      else None
+    }
+
+    processAndFind(board = board, pawn = pawn, x = oppositeEndOfBoardXAxePosition, y = 0, n = board.length)
+  }
+
+  private def findOnOppositeEndOfBoard(piece: Piece): Int = if (piece.color == White) 7 else 0
 }
